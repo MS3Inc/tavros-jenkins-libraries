@@ -1,8 +1,7 @@
 #!/usr/bin/env groovy
 
 def gitPushAll(String commitMessage, String repoName) {
-    sh '''git config --global http.sslVerify false \
-        && git config --global user.email "${BUILD_USER_EMAIL}" \
+    sh '''git config --global user.email "${BUILD_USER_EMAIL}" \
         && git config --global user.name "${BUILD_USER}" \
         && git init \
         && git checkout -b main \
@@ -15,7 +14,7 @@ def gitPushAll(String commitMessage, String repoName) {
 
 def createRepoWithPostRequest(String repoName, String repoDesc, Boolean ifPrivate) {
     sh '''
-        curl ${GITEA_URL}/api/v1/orgs/tavros/repos -i --fail -k \
+        curl ${GITEA_URL}/api/v1/orgs/tavros/repos -i --fail \
         -u $USERNAME:$PASSWORD \
         -H "Accept: application/json" \
         -H "Content-Type: application/json" \
