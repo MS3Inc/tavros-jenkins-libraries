@@ -12,7 +12,7 @@ def gitPushAll(String commitMessage, String repoName) {
     '''
 }
 
-def createRepoWithPostRequest(String repoName, String repoDesc, Boolean ifPrivate) {
+def createGiteaRepoWithPostRequest(String repoName, String repoDesc, Boolean ifPrivate) {
     sh '''
         curl ${GITEA_URL}/api/v1/orgs/tavros/repos -i --fail \
         -u $USERNAME:$PASSWORD \
