@@ -1,13 +1,13 @@
 #!/usr/bin/env groovy
 
-def gitPushAll(String commitMessage, String repoName) {
+def gitPushAll(String commitMessage, String org, String repoName) {
     sh '''git config --global user.email "${BUILD_USER_EMAIL}" \
         && git config --global user.name "${BUILD_USER}" \
         && git init \
         && git checkout -b main \
         && git add . \
         && git commit -m "''' + commitMessage + '''" \
-        && git remote add origin https://$USERNAME:$PASSWORD@$GITEA_URL_WITHOUT_PROTOCOL/tavros/''' + repoName + '''.git \
+        && git remote add origin https://$USERNAME:$PASSWORD@$GITEA_URL_WITHOUT_PROTOCOL/''' + org + '''/''' + repoName + '''.git \
         && git push -u origin main
     '''
 }
