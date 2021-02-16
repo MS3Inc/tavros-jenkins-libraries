@@ -12,9 +12,9 @@ def gitPushAll(String commitMessage, String repoName) {
     '''
 }
 
-def createGiteaRepoWithPostRequest(String repoName, String repoDesc, Boolean ifPrivate) {
+def createGiteaRepo(String org, String repoName, String repoDesc, Boolean ifPrivate) {
     sh '''
-        curl ${GITEA_URL}/api/v1/orgs/tavros/repos -i --fail \
+        curl ${GITEA_URL}/api/v1/orgs/''' + org + '''/repos -i --fail \
         -u $USERNAME:$PASSWORD \
         -H "Accept: application/json" \
         -H "Content-Type: application/json" \
