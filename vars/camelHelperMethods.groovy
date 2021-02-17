@@ -7,14 +7,14 @@ def gitPushAll(String commitMessage, String org, String repoName) {
         && git checkout -b main \
         && git add . \
         && git commit -m "''' + commitMessage + '''" \
-        && git remote add origin https://$USERNAME:$PASSWORD@$GITEA_URL_WITHOUT_PROTOCOL/''' + org + '''/''' + repoName + '''.git \
+        && git remote add origin https://$USERNAME:$PASSWORD@$SOURCE_CONTROL_URL_WITHOUT_PROTOCOL/''' + org + '''/''' + repoName + '''.git \
         && git push -u origin main
     '''
 }
 
 def createGiteaRepo(String org, String repoName, String repoDesc, Boolean ifPrivate) {
     sh '''
-        curl ${GITEA_URL}/api/v1/orgs/''' + org + '''/repos -i --fail \
+        curl $SOURCE_CONTROL_URL/api/v1/orgs/''' + org + '''/repos -i --fail \
         -u $USERNAME:$PASSWORD \
         -H "Accept: application/json" \
         -H "Content-Type: application/json" \
