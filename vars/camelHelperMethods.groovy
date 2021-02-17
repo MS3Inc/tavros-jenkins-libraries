@@ -7,7 +7,7 @@ def gitPushAll(String commitMessage, String org, String repoName) {
         && git checkout -b main \
         && git add . \
         && git commit -m "''' + commitMessage + '''" \
-        && git remote add origin https://$USERNAME:$PASSWORD@$SOURCE_CONTROL_URL_WITHOUT_PROTOCOL/''' + org + '''/''' + repoName + '''.git \
+        && git remote add origin https://$USERNAME:$PASSWORD@$SOURCE_CONTROL_URL_WITHOUT_PROTOCOL:''' + org + '''/''' + repoName + '''.git \
         && git push -u origin main
     '''
 }
