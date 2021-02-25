@@ -12,6 +12,12 @@ def gitPushAll(String commitMessage, String org, String repoName) {
     '''
 }
 
+def createRepo(String scmProvider, String org, String repoName, String repoDesc, Boolean ifPrivate) {
+    if (scmProvider == 'gitea') {
+        createGiteaRepo(org, repoName, repoDesc, ifPrivate)
+    }
+}
+
 def createGiteaRepo(String org, String repoName, String repoDesc, Boolean ifPrivate) {
     sh '''
         curl https://$TAVROS_SCM_HOST/api/v1/orgs/''' + org + '''/repos -i --fail \
