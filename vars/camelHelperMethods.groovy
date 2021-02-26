@@ -7,20 +7,20 @@ def gitPushAll(String commitMessage, String org, String repoName) {
         && git checkout -b main \
         && git add . \
         && git commit -m "''' + commitMessage + '''" \
-        && git remote add origin https://$USERNAME:$PASSWORD@$TAVROS_SCM_HOST/''' + org + '''/''' + repoName + '''.git \
+        && git remote add origin https://$USERNAME:$PASSWORD@$TAVROS_GIT_HOST/''' + org + '''/''' + repoName + '''.git \
         && git push -u origin main
     '''
 }
 
-def createRepo(String scmProvider, String org, String repoName, String repoDesc, Boolean ifPrivate) {
-    if (scmProvider == 'gitea') {
+def createRepo(String gitProvider, String org, String repoName, String repoDesc, Boolean ifPrivate) {
+    if (gitProvider == 'gitea') {
         createGiteaRepo(org, repoName, repoDesc, ifPrivate)
     }
 }
 
 def createGiteaRepo(String org, String repoName, String repoDesc, Boolean ifPrivate) {
     sh '''
-        curl https://$TAVROS_SCM_HOST/api/v1/orgs/''' + org + '''/repos -i --fail \
+        curl https://$TAVROS_GIT_HOST/api/v1/orgs/''' + org + '''/repos -i --fail \
         -u $USERNAME:$PASSWORD \
         -H "Accept: application/json" \
         -H "Content-Type: application/json" \
