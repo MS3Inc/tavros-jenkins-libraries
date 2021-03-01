@@ -1,0 +1,3 @@
+@Library("tavros-library@library-refactor") _
+
+openapi()
