@@ -68,7 +68,6 @@ def call() {
             )
         }
         environment {
-            FOLDER_FOR_SPEC = "generated-project"
             GIT_CREDS = credentials("${TAVROS_GIT_CREDS}")
             GIT_HOST = "${TAVROS_GIT_HOST}"
         }
@@ -76,11 +75,10 @@ def call() {
             stage('Checkout Spec Repo') {
                 steps  {
                     script {
-                        def branchName = "${TAG}" ? "refs/tags/${TAG}" : "*/main"
                         dir("spec-files") {
                             checkout([
                                     $class: 'GitSCM',
-                                    branches: [[name: branchName]],
+                                    branches: [[name: "${TAG}" ? "refs/tags/${TAG}" : "*/main"]],
                                     userRemoteConfigs: [[
                                             credentialsId: "${TAVROS_GIT_CREDS}",
                                             url: "https://${GIT_HOST}/${ORG}/${API_REPO_NAME}.git"
