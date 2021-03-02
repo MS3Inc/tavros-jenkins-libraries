@@ -9,7 +9,7 @@ ls && mvn archetype:generate \
 -DarchetypeVersion=0.2.6 \
 -DspecificationUri=openapi.yaml \
 -DpackageInPathFormat \
--Dpackage=com.ms3_inc.camel \
+-Dpackage=${GROUP_ID} \
 -DgroupId=${GROUP_ID} \
 -DartifactId=${ARTIFACT_ID} \
 -Dversion=${VERSION} \
