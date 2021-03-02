@@ -19,6 +19,8 @@ def call() {
                         - infinity
                       - name: maven
                         image: maven:3.6.3-jdk-11
+                        securityContext:
+                          runAsUser: 1000
                         command:
                         - sleep
                         args:
@@ -29,42 +31,42 @@ def call() {
         }
         parameters {
             string(
-                    name: 'ORG',
-                    description: 'Required. The organization to create the repository in.'
+                name: 'ORG',
+                description: 'Required. The organization to create the repository in.'
             )
             string(
-                    name: 'API_REPO_NAME',
-                    description: 'Required. The name of the repository to create.'
+                name: 'API_REPO_NAME',
+                description: 'Required. The name of the repository to create.'
             )
             string(
-                    name: 'TAG',
-                    description: 'Optional. The tag from the spec repo. If empty, defaults to pulling from main branch.'
+                name: 'TAG',
+                description: 'Optional. The tag from the spec repo. If empty, defaults to pulling from main branch.'
             )
             string(
-                    name: 'REPO_NAME',
-                    description: 'Required. A name of the new repo.'
+                name: 'REPO_NAME',
+                description: 'Required. A name of the new repo.'
             )
             string(
-                    name: 'REPO_DESC',
-                    description: 'Optional. A description of the new repository.'
+                name: 'REPO_DESC',
+                description: 'Optional. A description of the new repository.'
             )
             booleanParam(
-                    name: 'IS_PRIVATE',
-                    description: 'Whether the repository is to private or not.',
-                    defaultValue: 'false',
+                name: 'IS_PRIVATE',
+                description: 'Whether the repository is to private or not.',
+                defaultValue: 'false',
             )
             string(
-                    name: 'GROUP_ID',
-                    description: 'Required. The group ID of the new project.'
+                name: 'GROUP_ID',
+                description: 'Required. The group ID of the new project.'
             )
             string(
-                    name: 'ARTIFACT_ID',
-                    description: 'Required. The artifact ID (i.e. name) of the new project.'
+                name: 'ARTIFACT_ID',
+                description: 'Required. The artifact ID (i.e. name) of the new project.'
             )
             string(
-                    name: 'VERSION',
-                    defaultValue: '0.0.1',
-                    description: 'Required. The version of the project.'
+                name: 'VERSION',
+                defaultValue: '0.1.0-SNAPSHOT',
+                description: 'Required. The version of the project.'
             )
         }
         environment {
@@ -74,28 +76,15 @@ def call() {
         stages {
             stage('Checkout Spec Repo') {
                 steps  {
-                    script {
-                        dir("spec-files") {
-                            checkout([
-                                    $class: 'GitSCM',
-                                    branches: [[name: "${TAG}" ? "refs/tags/${TAG}" : "*/main"]],
-                                    userRemoteConfigs: [[
-                                            credentialsId: "${TAVROS_GIT_CREDS}",
-                                            url: "https://${GIT_HOST}/${ORG}/${API_REPO_NAME}.git"
-                                    ]]
-                            ])
-                        }
-                    }
-                }
-            }
-            stage('Generate Project with OpenAPI Archetype') {
-                steps {
-                    container('maven') {
-                        script {
-                            dir("spec-files") {
-                                utils.shResource "maven-archetype-generate.sh"
-                            }
-                        }
+                    dir("openapi") {
+                        checkout([
+                            $class: 'GitSCM',
+                            branches: [[name: "${TAG}" ? "refs/tags/${TAG}" : "*/main"]],
+                            userRemoteConfigs: [[
+                                credentialsId: "${TAVROS_GIT_CREDS}",
+                                url: "https://${GIT_HOST}/${ORG}/${API_REPO_NAME}.git"
+                            ]]
+                        ])
                     }
                 }
             }
@@ -107,11 +96,20 @@ def call() {
                 }
             }
             stage('Setup Project') {
+                environment {
+                    ARCHETYPE_VERSION = "0.2.6"
+                }
                 steps {
                     container('maven') {
                         script {
+                            dir("repo") {
+                                utils.shResource "maven-archetype-generate.sh"
+                            }
+                        }
+                    }
+                    dir("repo/${ARTIFACT_ID}") {
+                        script {
                             utils.writeResource "camelwebservice.jenkinsfile", "Jenkinsfile"
-                            sh 'mv Jenkinsfile ${ARTIFACT_ID}/Jenkinsfile'
                         }
                     }
                 }
@@ -122,9 +120,9 @@ def call() {
                 }
                 steps {
                     wrap([$class: 'BuildUser']) {
-                        dir("${ARTIFACT_ID}") {
+                        dir("repo/${ARTIFACT_ID}") {
+                            sh 'yum install -y -q git'
                             script {
-                                sh 'yum install -y -q git'
                                 utils.shResource "git-init-push.sh"
                             }
                         }
