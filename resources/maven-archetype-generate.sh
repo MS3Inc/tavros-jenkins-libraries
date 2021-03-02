@@ -3,11 +3,11 @@
 set -o nounset
 set -o errexit
 
-mvn archetype:generate \
+ls && mvn archetype:generate \
 -DarchetypeGroupId=com.ms3-inc.tavros \
 -DarchetypeArtifactId=camel-openapi-archetype \
 -DarchetypeVersion=0.2.6 \
--DspecificationUri=openapi.yaml
+-DspecificationUri=openapi.yaml \
 -DpackageInPathFormat \
 -Dpackage=com.ms3_inc.camel \
 -DgroupId=${GROUP_ID} \
