@@ -60,7 +60,7 @@ def call() {
                             curl -sS https://raw.githubusercontent.com/swagger-api/swagger-petstore/swagger-petstore-v3-1.0.5/src/main/resources/openapi.yaml > openapi.yaml
                         '''
                         script {
-                            utils.writeResource "openapi.jenkinsfile", "Jenkinsfile"
+                            utils.writeResource "openapi.jenkinsfile", "Jenkinsfiletest"
                         }
                     }
                 }
