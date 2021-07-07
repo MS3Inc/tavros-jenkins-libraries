@@ -44,8 +44,8 @@ def call() {
             )
             booleanParam(
                 name: 'REPO_ADMIN_ACCESS_CONTROL',
-                description: 'Required. Ability for Repo Admin to change team access'
-                defaultValue: 'true',
+                description: 'Required. Ability for Repo Admin to change team access',
+                defaultValue: 'true'
             )
             string(
                 name: 'ORG_USER',
