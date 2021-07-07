@@ -17,15 +17,25 @@ def call(Map args = [:]) {
                         - sleep
                         args:
                         - infinity
+                      - name: maven
+                        image: maven:3.6.3-jdk-11
+                        securityContext:
+                          runAsUser: 1000
+                        command:
+                        - sleep
+                        args:
+                        - infinity
                 '''
                 defaultContainer 'builder'
             }
         }
         stages {
-            stage('Example') {
-                steps {
-                    script {
-                        sh 'echo This is a sample pipeline'
+            stage('Test/Build Camel API') {
+                container('maven') {
+                    steps {
+                        script {
+                            utils.shResource "build-api.sh"
+                        }
                     }
                 }
             }

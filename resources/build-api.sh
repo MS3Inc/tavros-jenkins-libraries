@@ -3,4 +3,4 @@
 mvn test
 mvn clean package
 
-docker build -t dind-pongo:latest -f dind-pongo.Dockerfile .
+# docker build -t dind-pongo:latest -f dind-pongo.Dockerfile .
