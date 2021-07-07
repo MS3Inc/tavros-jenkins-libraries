@@ -4,7 +4,7 @@ set -o nounset
 set -o errexit
 
 curl -sSL -X POST "https://${GIT_HOST}/api/v1/orgs" -i --fail \
-  -u GIT_CREDS_USR:$GIT_CREDS_PSW \
+  -u $GIT_CREDS_USR:$GIT_CREDS_PSW \
   -H  "accept: application/json" \
   -H  "Content-Type: application/json" \
   -d "{ \
