@@ -28,4 +28,14 @@ class Utilities {
                 throw new IllegalArgumentException("Unsupported provider: $provider")
         }
     }
+
+    def createOrg(String provider) {
+        switch (provider) {
+            case "gitea":
+                shResource"gitea-create-org.sh"
+                break
+            default:
+                throw new IllegalArgumentException("Unsupported provider: $provider")
+        }
+    }
 }
