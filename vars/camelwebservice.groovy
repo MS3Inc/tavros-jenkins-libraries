@@ -31,8 +31,8 @@ def call(Map args = [:]) {
         }
         stages {
             stage('Test/Build Camel API') {
-                container('maven') {
-                    steps {
+                steps {
+                    container('maven') {
                         script {
                             utils.shResource "build-api.sh"
                         }
