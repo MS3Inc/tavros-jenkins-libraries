@@ -29,9 +29,12 @@ def call(Map args = [:]) {
                         image: docker:dind
                         securityContext:
                           privileged: true
-                        volumeMounts:
-                        - name: dind-storage
-                          mountPath: /var/lib/docker
+                        volumeMounts: 
+                        - name: graph-storage 
+                          mountPath: /var/lib/docker  
+                        volumes: 
+                        - name: graph-storage 
+                          emptyDir: {}
                         command: ["tail", "-f", "/dev/null"]
                 '''
                 defaultContainer 'builder'
