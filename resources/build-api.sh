@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-mvn test
-mvn clean package
-
-# docker build -t dind-pongo:latest -f dind-pongo.Dockerfile .
+docker login ${REG_HOST} -u ${REG_CREDS_USR} -p ${REG_CREDS_PSW}
+docker build -t ${REG_HOST}/rm/test-camel:latest .
+docker push ${REG_HOST}/rm/test-camel:latest

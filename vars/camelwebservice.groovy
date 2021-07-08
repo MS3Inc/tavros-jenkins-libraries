@@ -25,14 +25,30 @@ def call(Map args = [:]) {
                         - sleep
                         args:
                         - infinity
+                      - name: docker
+                        image: docker:latest
+                        command: ["tail", "-f", "/dev/null"]
                 '''
                 defaultContainer 'builder'
             }
         }
         stages {
-            stage('Test/Build Camel API') {
+            stage('Test/Package Camel API') {
                 steps {
                     container('maven') {
+                        script {
+                            utils.shResource "test-api.sh"
+                        }
+                    }
+                }
+            }
+            stage('Build/Push Camel API') {
+                environment {
+                    REG_CREDS = credentials("${TAVROS_REG_CREDS}")
+                    REG_HOST = "${TAVROS_REG_HOST}"
+                }
+                steps {
+                    container('docker') {
                         script {
                             utils.shResource "build-api.sh"
                         }
