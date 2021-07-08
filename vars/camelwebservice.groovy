@@ -26,7 +26,12 @@ def call(Map args = [:]) {
                         args:
                         - infinity
                       - name: docker
-                        image: docker:latest
+                        image: docker:dind
+                        securityContext:
+                          privileged: true
+                        volumeMounts:
+                        - name: dind-storage
+                          mountPath: /var/lib/docker
                         command: ["tail", "-f", "/dev/null"]
                 '''
                 defaultContainer 'builder'
