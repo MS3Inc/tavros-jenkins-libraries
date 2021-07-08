@@ -32,7 +32,6 @@ def call(Map args = [:]) {
                         volumeMounts: 
                         - name: graph-storage 
                           mountPath: /var/lib/docker  
-                        command: ["tail", "-f", "/dev/null"]
                       volumes: 
                       - name: graph-storage 
                         emptyDir: {}
