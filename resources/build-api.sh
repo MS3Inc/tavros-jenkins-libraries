@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 
-mvn deploy -DREG_HOST=$REG_HOST -DREG_CREDS_USR=$REG_CREDS_USR -DREG_CREDS_PSW=$REG_CREDS_PSW
+mvn deploy -Dhost=$REG_HOST -Duser=$REG_CREDS_USR -Dpass=$REG_CREDS_PSW
