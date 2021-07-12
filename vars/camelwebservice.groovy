@@ -26,7 +26,7 @@ def call(Map args = [:]) {
                         args:
                         - infinity
                       - name: docker
-                        image: docker:dind
+                        image: registry.tavros.ms3-inc.com/dind-maven:latest
                         securityContext:
                           privileged: true
                         volumeMounts: 
