@@ -11,21 +11,43 @@ def call(Map args = [:]) {
                     kind: Pod
                     spec:
                       containers:
-                      - name: builder
-                        image: fedora
-                        command:
-                        - sleep
+                      - name: maven
+                        image: maven:3.8.1-jdk-11-slim
+                        securityContext:
+                          runAsUser: 1000
+                        env:
+                        - name: DOCKER_HOST 
+                          value: tcp://localhost:2375 
+                        command: ["/bin/sh", "-c"]
                         args:
-                        - infinity
+                        - tail -f /dev/null
+                      - name: dind-daemon 
+                        image: docker:18.06-dind
+                        resources: 
+                        requests: 
+                          cpu: 20m 
+                          memory: 512Mi 
+                        securityContext: 
+                          privileged: true 
+                        volumeMounts: 
+                        - name: graph-storage 
+                          mountPath: /var/lib/docker  
+                      volumes: 
+                      - name: graph-storage 
+                        emptyDir: {}
                 '''
-                defaultContainer 'builder'
+                defaultContainer 'maven'
             }
         }
         stages {
-            stage('Example') {
+            stage('Test/Build/Push Camel API') {
+                environment {
+                    REG_CREDS = credentials("${TAVROS_REG_CREDS}")
+                    REG_HOST = "${TAVROS_REG_HOST}"
+                }
                 steps {
                     script {
-                        sh 'echo This is a sample pipeline'
+                        utils.shResource "maven-deploy.sh"
                     }
                 }
             }
