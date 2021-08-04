@@ -11,6 +11,12 @@ def call(Map args = [:]) {
                     kind: Pod
                     spec:
                       containers:
+                      - name: git
+                        image: fedora
+                        command:
+                        - sleep
+                        args:
+                        - infinity
                       - name: maven
                         image: maven:3.8.1-jdk-11-slim
                         securityContext:
@@ -48,6 +54,39 @@ def call(Map args = [:]) {
                 steps {
                     script {
                         utils.shResource "maven-deploy.sh"
+                    }
+                }
+            }
+            stage('Update Helm Release') {
+                environment {
+                    GIT_CREDS = credentials("${TAVROS_GIT_CREDS}")
+                    GIT_HOST = "${TAVROS_GIT_HOST}"
+                    PROJECT_VERSION = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout").trim()
+                    COMMIT_MSG = "Update version"
+                }
+                steps {
+                    container('git') {
+                        dir("tavros-platform") {
+                            checkout([
+                                    $class           : 'GitSCM',
+                                    branches         : [[name: '*/main']],
+                                    extensions       : [[$class: 'LocalBranch', localBranch: "**"]],
+                                    userRemoteConfigs: [[
+                                                                credentialsId: "${TAVROS_GIT_CREDS}",
+                                                                url          : "https://${TAVROS_GIT_HOST}/tavros/platform.git"
+                                                        ]]
+                            ])
+                        }
+
+                        script {
+                            if (env.BUILD_USER_EMAIL == null) {
+                                env.BUILD_USER_EMAIL = ""
+                                env.BUILD_USER = "Jenkins"
+                            }
+
+                            sh 'yum install -y -q git'
+                            utils.shResource "update-helm-release.sh"
+                        }
                     }
                 }
             }
