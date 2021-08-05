@@ -2,9 +2,9 @@
 set -o nounset
 set -o errexit
 
-CURRENT_API=$(echo "${GIT_URL%????}" | grep -Eo '[^/]+$')
+CURRENT_API=$(echo ${GIT_URL%????} | grep -Eo '[^/]+$')
 
-cd tavros-platform/dev/"$CURRENT_API" \
+cd tavros-platform/dev/$CURRENT_API \
   && sed -i "s/tag:.*/tag: '${PROJECT_VERSION}'/g" release.yaml \
   && cat release.yaml \
   && cd ../.. \
@@ -17,6 +17,6 @@ cd tavros-platform/dev/"$CURRENT_API" \
   && if [[ $GIT_STATUS == *"nothing to commit"* ]]; then
       echo "No changes to helm release version, no need to commit.";
   else
-      git commit -m "${COMMIT_MSG}" \
+      git commit -m ${COMMIT_MSG} \
       && git push -u origin main
   fi
