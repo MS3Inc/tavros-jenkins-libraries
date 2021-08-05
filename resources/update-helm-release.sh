@@ -18,6 +18,6 @@ echo ${GIT_URL} \
   && if [[ $GIT_STATUS == *"nothing to commit"* ]]; then
       echo "No changes to helm release version, no need to commit.";
   else
-      git commit -m ${COMMIT_MSG} \
+      git commit -m "${COMMIT_MSG}" \
       && git push -u origin main
   fi
