@@ -2,9 +2,9 @@
 set -o nounset
 set -o errexit
 
-CURRENT_API=$(echo ${GIT_URL%????} | grep -Eo '[^/]+$')
+CURRENT_API=$(echo ${GIT_URL%".git"} | grep -Eo '[^/]+$')
 
-echo $CURRENT_API \
+echo ${GIT_URL} \
   && cd tavros-platform/dev/$CURRENT_API \
   && sed -i "s/tag:.*/tag: '${PROJECT_VERSION}'/g" release.yaml \
   && cat release.yaml \
