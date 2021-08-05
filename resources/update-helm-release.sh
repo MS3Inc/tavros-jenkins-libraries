@@ -4,7 +4,8 @@ set -o errexit
 
 CURRENT_API=$(echo ${GIT_URL%????} | grep -Eo '[^/]+$')
 
-cd tavros-platform/dev/$CURRENT_API \
+echo $CURRENT_API \
+  && cd tavros-platform/dev/$CURRENT_API \
   && sed -i "s/tag:.*/tag: '${PROJECT_VERSION}'/g" release.yaml \
   && cat release.yaml \
   && cd ../.. \
