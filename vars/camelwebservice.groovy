@@ -63,6 +63,7 @@ def call(Map args = [:]) {
                     GIT_HOST = "${TAVROS_GIT_HOST}"
                     PROJECT_VERSION = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout").trim()
                     COMMIT_MSG = "Update version"
+                    ENV = "${env.DEFAULT_ENV == null ? 'dev' : env.DEFAULT_ENV}"
                 }
                 steps {
                     container('git') {
