@@ -16,7 +16,7 @@ echo ${GIT_URL} \
   && git add . \
   && GIT_STATUS=$(git status) \
   && if [[ $GIT_STATUS == *"nothing to commit"* ]]; then
-      echo "No changes to helm release version, no need to commit.";
+      printf "\nNo changes to helm release version, no need to commit.";
   else
       git commit -m "Update to ${PROJECT_VERSION} in ${ENV}/$CURRENT_API/release.yaml" \
       && git push -u origin main
