@@ -48,8 +48,8 @@ def call(Map args = [:]) {
         stages {
             stage('Test/Build/Push Camel API') {
                 environment {
-                    REG_CREDS = credentials("${TAVROS_REG_CREDS}")
-                    REG_HOST = "${TAVROS_REG_HOST}"
+                    NEXUS_CREDS = credentials("${TAVROS_NEXUS_CREDS}")
+                    FQDN = "${TAVROS_FQDN}"
                 }
                 steps {
                     script {
