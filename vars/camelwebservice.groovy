@@ -62,7 +62,7 @@ def call(Map args = [:]) {
                     GIT_CREDS = credentials("${TAVROS_GIT_CREDS}")
                     GIT_HOST = "${TAVROS_GIT_HOST}"
                     PROJECT_VERSION = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout").trim()
-                    ENV = "${env.DEFAULT_ENV == null ? 'dev' : env.DEFAULT_ENV}"
+                    DEFAULT_ENV = "${"${DEFAULT_ENV}" == null ? 'dev' : "${DEFAULT_ENV}"}"
                 }
                 steps {
                     container('git') {
