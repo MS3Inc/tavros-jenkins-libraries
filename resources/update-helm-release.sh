@@ -18,6 +18,6 @@ echo ${GIT_URL} \
   && if [[ $GIT_STATUS == *"nothing to commit"* ]]; then
       printf "\nNo changes to helm release version, no need to commit.";
   else
-      git commit -m "Update to ${PROJECT_VERSION} in ${ENV}/$CURRENT_API/release.yaml" \
+      git commit -m "Bump ${ENV}/$CURRENT_API/release.yaml to ${PROJECT_VERSION}" \
       && git push -u origin main
   fi
