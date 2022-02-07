@@ -24,8 +24,6 @@ def call(Map args = [:]) {
                         env:
                         - name: DOCKER_HOST 
                           value: tcp://localhost:2375 
-                        - name: MAVEN_OPTS
-                          value: -Xss2m
                         command: ["/bin/sh", "-c"]
                         args:
                         - tail -f /dev/null
