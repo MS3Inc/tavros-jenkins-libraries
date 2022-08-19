@@ -13,6 +13,7 @@ echo ${GIT_URL} \
   && git remote add origin "https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@${GIT_HOST}/tavros/platform.git" \
   && git config --global user.email "${BUILD_USER_EMAIL}" \
   && git config --global user.name "${BUILD_USER}" \
+  && git config --global --add safe.directory tavros-platform \
   && git add . \
   && GIT_STATUS=$(git status) \
   && if [[ $GIT_STATUS == *"nothing to commit"* ]]; then
