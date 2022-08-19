@@ -5,12 +5,14 @@ set -o errexit
 CURRENT_API=$(echo ${GIT_URL%".git"} | grep -Eo '[^/]+$')
 
 echo ${GIT_URL} \
+  && echo "Working directory: $PWD" \
   && cd tavros-platform/${DEFAULT_ENV}/$CURRENT_API \
   && sed -i "s/tag:.*/tag: '${PROJECT_VERSION}'/g" release.yaml \
   && cat release.yaml \
   && cd ../.. \
   && git remote remove origin \
   && git remote add origin "https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@${GIT_HOST}/tavros/platform.git" \
+  && echo "Adding git configuration..."
   && git config --global user.email "${BUILD_USER_EMAIL}" \
   && git config --global user.name "${BUILD_USER}" \
   && git config --global --add safe.directory tavros-platform \
