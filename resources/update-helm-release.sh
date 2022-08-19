@@ -6,6 +6,7 @@ CURRENT_API=$(echo ${GIT_URL%".git"} | grep -Eo '[^/]+$')
 
 echo ${GIT_URL} \
   && echo "Working directory: $PWD" \
+  && git config --global --add safe.directory tavros-platform \
   && cd tavros-platform/${DEFAULT_ENV}/$CURRENT_API \
   && sed -i "s/tag:.*/tag: '${PROJECT_VERSION}'/g" release.yaml \
   && cat release.yaml \
@@ -15,7 +16,6 @@ echo ${GIT_URL} \
   && echo "Adding git configuration..." \
   && git config --global user.email "${BUILD_USER_EMAIL}" \
   && git config --global user.name "${BUILD_USER}" \
-  && git config --global --add safe.directory tavros-platform \
   && git add . \
   && GIT_STATUS=$(git status) \
   && if [[ $GIT_STATUS == *"nothing to commit"* ]]; then
