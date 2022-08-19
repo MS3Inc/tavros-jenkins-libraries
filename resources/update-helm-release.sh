@@ -6,8 +6,9 @@ CURRENT_API=$(echo ${GIT_URL%".git"} | grep -Eo '[^/]+$')
 
 echo ${GIT_URL} \
   && echo "Working directory: $PWD" \
-  && git config --global --add safe.directory "$PWD/tavros-platform" \  
-  && cd tavros-platform/${DEFAULT_ENV}/$CURRENT_API \
+  && cd tavros-platform \
+  && git config --add safe.directory "$PWD/tavros-platform" \  
+  && cd ${DEFAULT_ENV}/$CURRENT_API \
   && sed -i "s/tag:.*/tag: '${PROJECT_VERSION}'/g" release.yaml \
   && cat release.yaml \
   && cd ../.. \
