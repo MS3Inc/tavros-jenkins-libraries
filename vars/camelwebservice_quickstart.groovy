@@ -121,7 +121,8 @@ def call() {
                 steps {
                     wrap([$class: 'BuildUser']) {
                         dir("repo/${ARTIFACT_ID}") {
-                            sh 'yum install -y -q git'
+                            sh 'echo "Current workspace is $WORKSPACE"'
+                            sh 'git config --global --add safe.directory "/home/jenkins/agent/workspace/Quickstart − Camel Web Service Project/repo/${ARTIFACT_ID}"'
                             script {
                                 utils.shResource "git-init-push.sh"
                             }
