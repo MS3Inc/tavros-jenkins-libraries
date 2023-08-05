@@ -24,6 +24,7 @@ def call() {
         parameters {
             string(
                 name: 'ORG',
+                defaultValue: 'tavros',
                 description: 'Required. The organization to create the repository in.'
             )
             string(
