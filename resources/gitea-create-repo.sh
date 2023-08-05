@@ -3,9 +3,8 @@
 set -o nounset
 set -o errexit
 
-echo "Attempting to curl to https://${GIT_HOST}/api/v1/orgs/${ORG}/repos"
-&& curl -sSL -X POST "https://${GIT_HOST}/api/v1/orgs/${ORG}/repos" -i --fail \
-  -u "$GIT_CREDS_USR:$GIT_CREDS_PSW" \
+curl -sSL -X POST "https://${GIT_HOST}/api/v1/orgs/${ORG}/repos" -i --fail \
+  -u $GIT_CREDS_USR:$GIT_CREDS_PSW \
   -H "Accept: application/json" \
   -H "Content-Type: application/json" \
   -d "{ \
