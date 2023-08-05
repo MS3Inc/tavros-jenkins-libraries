@@ -40,10 +40,6 @@ def call() {
                 description: 'Required. The name of the spec repository to pull from.'
             )
             string(
-                name: 'TAG',
-                description: 'Optional. The tag from the spec repo. If empty, defaults to pulling from main branch.'
-            )
-            string(
                 name: 'REPO_NAME',
                 description: 'Required. A name of the new repo.'
             )
