@@ -12,7 +12,7 @@ def call() {
                     spec:
                       containers:
                       - name: builder
-                        image: fedora
+                        image: atlassian/default-image:4.20230726
                         command:
                         - sleep
                         args:
@@ -77,7 +77,6 @@ def call() {
                         // TODO: add back functionality to check out via tags?
                         withCredentials([usernamePassword(credentialsId: "${TAVROS_GIT_CREDS}", usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]){
                             sh('''
-                                yum install -y -q git
                                 git clone "https://$GIT_USERNAME:$GIT_PASSWORD@${GIT_HOST}/${ORG}/${API_REPO_NAME}.git"
                             ''')
                         }
