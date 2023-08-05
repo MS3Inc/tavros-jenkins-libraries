@@ -37,7 +37,7 @@ def call() {
             )
             string(
                 name: 'API_REPO_NAME',
-                description: 'Required. The name of the repository to create.'
+                description: 'Required. The name of the spec repository to pull from.'
             )
             string(
                 name: 'TAG',
