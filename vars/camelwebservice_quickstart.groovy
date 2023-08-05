@@ -78,16 +78,14 @@ def call() {
             stage('Checkout Spec Repo') {
                 steps  {
                     dir("openapi") {
-                        // TODO: add back functionality to check out via tags?
-                        withCredentials([usernamePassword(credentialsId: "${TAVROS_GIT_CREDS}", usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]){
-                            sh('''
-                                yum install -y -q git
-                                git config credential.helper "!f() { echo username=\\$GIT_USERNAME; echo password=\\$GIT_PASSWORD; }; f"
-                                git checkout "https://${GIT_HOST}/${ORG}/${API_REPO_NAME}.git"
-                                echo "Finished checking out git"
-                                ls
-                            ''')
-                        }
+                        checkout([
+                            $class: 'GitSCM',
+                            branches: [[name: "${TAG}" ? "refs/tags/${TAG}" : "*/main"]],
+                            userRemoteConfigs: [[
+                                credentialsId: "${TAVROS_GIT_CREDS}",
+                                url: "https://${GIT_HOST}/${ORG}/${API_REPO_NAME}.git"
+                            ]]
+                        ])
                     }
                 }
             }
