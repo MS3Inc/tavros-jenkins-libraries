@@ -74,7 +74,7 @@ def call() {
                     wrap([$class: 'BuildUser']) {
                         dir("repo") {
                             sh 'yum install -y -q git'
-                            sh 'git config --global --add safe.directory \'*\''
+                            sh 'git config --global --add safe.directory "$WORKSPACE/repo"'
                             script {
                                 utils.shResource "git-init-push.sh"
                             }
