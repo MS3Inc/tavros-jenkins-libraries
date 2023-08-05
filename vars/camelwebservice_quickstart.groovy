@@ -82,7 +82,7 @@ def call() {
                         withCredentials([usernamePassword(credentialsId: "${TAVROS_GIT_CREDS}", usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]){
                             sh('''
                                 yum install -y -q git
-                                git checkout "https://$GIT_USERNAME:$GIT_PASSWORD@${GIT_HOST}/${ORG}/${API_REPO_NAME}.git"
+                                git clone "https://$GIT_USERNAME:$GIT_PASSWORD@${GIT_HOST}/${ORG}/${API_REPO_NAME}.git"
                                 echo "Finished checking out git"
                                 ls
                             ''')
