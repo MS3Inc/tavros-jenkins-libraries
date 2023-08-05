@@ -11,6 +11,6 @@ mvn -V --no-transfer-progress --batch-mode archetype:generate \
   $(if [[ ${GROUP_ID} == *"-"* ]]; then echo -Dpackage=${GROUP_ID/-/_}; fi) \
   -DgroupId=${GROUP_ID} \
   -DspecificationUri="../openapi/${API_REPO_NAME}/openapi.yaml" \
-  -DartifactId=${ARTIFACT_ID} \
+  -DartifactId=${REPO_NAME} \
   -Dversion=${VERSION} \
   -DinteractiveMode=false

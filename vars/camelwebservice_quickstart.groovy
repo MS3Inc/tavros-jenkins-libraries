@@ -41,7 +41,7 @@ def call() {
             )
             string(
                 name: 'REPO_NAME',
-                description: 'Required. A name of the new repo.'
+                description: 'Required. A name of the new API implementation repo.'
             )
             string(
                 name: 'REPO_DESC',
@@ -55,10 +55,6 @@ def call() {
             string(
                 name: 'GROUP_ID',
                 description: 'Required. The group ID of the new project.'
-            )
-            string(
-                name: 'ARTIFACT_ID',
-                description: 'Required. The artifact ID (i.e. name) of the new project.'
             )
             string(
                 name: 'VERSION',
@@ -102,7 +98,7 @@ def call() {
                             }
                         }
                     }
-                    dir("repo/${ARTIFACT_ID}") {
+                    dir("repo/${REPO_NAME}") {
                         script {
                             utils.writeResource "camelwebservice.jenkinsfile", "Jenkinsfile"
                         }
@@ -115,8 +111,8 @@ def call() {
                 }
                 steps {
                     wrap([$class: 'BuildUser']) {
-                        dir("repo/${ARTIFACT_ID}") {
-                            sh 'git config --global --add safe.directory "$WORKSPACE/repo/${ARTIFACT_ID}"'
+                        dir("repo/${REPO_NAME}") {
+                            sh 'git config --global --add safe.directory "$WORKSPACE/repo/${REPO_NAME}"'
                             script {
                                 utils.shResource "git-init-push.sh"
                             }
