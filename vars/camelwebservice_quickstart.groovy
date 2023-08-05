@@ -83,8 +83,6 @@ def call() {
                             sh('''
                                 yum install -y -q git
                                 git clone "https://$GIT_USERNAME:$GIT_PASSWORD@${GIT_HOST}/${ORG}/${API_REPO_NAME}.git"
-                                echo "Finished checking out git"
-                                ls
                             ''')
                         }
                     }
@@ -99,7 +97,7 @@ def call() {
             }
             stage('Setup Project') {
                 environment {
-                    ARCHETYPE_VERSION = "0.2.6"
+                    ARCHETYPE_VERSION = "0.2.7"
                 }
                 steps {
                     container('maven') {
