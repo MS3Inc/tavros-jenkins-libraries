@@ -12,7 +12,7 @@ def call(Map args = [:]) {
                     spec:
                       containers:
                       - name: git
-                        image: fedora
+                        image: atlassian/default-image:4.20230726
                         command:
                         - sleep
                         args:
@@ -84,7 +84,6 @@ def call(Map args = [:]) {
                                 env.BUILD_USER = "Jenkins"
                             }
 
-                            sh 'yum install -y -q git'
                             utils.shResource "update-helm-release.sh"
                         }
                     }
