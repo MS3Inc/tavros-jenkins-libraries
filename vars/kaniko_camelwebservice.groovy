@@ -24,6 +24,22 @@ def call(Map args = [:]) {
                         command: ["/bin/sh", "-c"]
                         args:
                         - tail -f /dev/null
+                      - name: kaniko
+                        image: gcr.io/kaniko-project/executor:debug
+                        command:
+                        - sleep
+                        args:
+                        - 9999999
+                        volumeMounts:
+                        - name: kaniko-secret
+                          mountPath: /kaniko/.docker
+                      volumes:
+                      - name: kaniko-secret
+                        secret:
+                            secretName: tavros-artifacts-registry
+                            items:
+                            - key: .dockerconfigjson
+                              path: config.json
                 '''
                 defaultContainer 'maven'
             }
@@ -44,6 +60,15 @@ def call(Map args = [:]) {
                 steps {
                     script {
                         sh 'mvn -s .settings.xml clean package'
+                    }
+                }
+            }
+            stage('Push with Kaniko') {
+                steps {
+                    container('kaniko') {
+                        sh '''
+                        cat /kaniko/.docker/config.json
+                        '''
                     }
                 }
             }
