@@ -59,30 +59,23 @@ def call(Map args = [:]) {
             )}"""
         }
         stages {
-            stage('Test Stage') {
+            stage('Test/Build') {
+                environment {
+                    NEXUS_CREDS = credentials("${TAVROS_REG_CREDS}")
+                    FQDN = "${TAVROS_FQDN}"
+                }
                 steps {
                     script {
-                        sh 'echo "registry.${FQDN}/${NAME}:${VERSION}"'
+                        sh 'mvn -s .settings.xml clean package'
                     }
                 }
             }
-//            stage('Test/Build') {
-//                environment {
-//                    NEXUS_CREDS = credentials("${TAVROS_REG_CREDS}")
-//                    FQDN = "${TAVROS_FQDN}"
-//                }
-//                steps {
-//                    script {
-//                        sh 'mvn -s .settings.xml clean package'
-//                    }
-//                }
-//            }
             stage('Push with Kaniko') {
                 steps {
                     container('kaniko') {
                         sh '''
-                        echo "registry.${FQDN}/${NAME}:${VERSION}"
-                        echo "Running kaniko cmd..."
+                        echo "Running kaniko cmd"
+                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="registry.${FQDN}/${NAME}:${VERSION}"
                         '''
                     }
                 }
