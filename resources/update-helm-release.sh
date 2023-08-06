@@ -7,11 +7,13 @@ CURRENT_API=$(echo ${GIT_URL%".git"} | grep -Eo '[^/]+$')
 echo ${GIT_URL} \
   && cd tavros-platform \
   && echo "Working directory: $PWD" \
+  && echo ls \
   && cd test/$CURRENT_API \
   && sed -i "s/tag:.*/tag: '${VERSION}'/g" release.yaml \
   && cat release.yaml \
   && cd ../.. \
   && echo "Changing git origin" \
+  && git config --global --add safe.directory "$WORKSPACE/tavros-platform" \
   && git remote remove origin \
   && git remote add origin "https://${GIT_CREDS_USR}:${GIT_CREDS_PSW}@${GIT_HOST}/tavros/platform.git" \
   && echo "Adding git configuration..." \
