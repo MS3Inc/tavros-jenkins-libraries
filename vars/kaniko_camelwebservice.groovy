@@ -46,28 +46,43 @@ def call(Map args = [:]) {
         }
         stages {
             stage('Test Stage') {
-                steps {
-                    script {
-                        sh 'echo "Running first stage"'
-                    }
-                }
-            }
-            stage('Test/Build') {
                 environment {
-                    NEXUS_CREDS = credentials("${TAVROS_REG_CREDS}")
-                    FQDN = "${TAVROS_FQDN}"
+                    FQDN = """${sh(
+                            returnStdout: true,
+                            script: 'mvn help:evaluate -Dexpression=registry.host -q -DforceStdout'
+                    )}"""
+                    VERSION = """${sh(
+                            returnStdout: true,
+                            script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout'
+                    )}"""
+                    NAME = """${sh(
+                            returnStdout: true,
+                            script: 'mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout'
+                    )}"""
                 }
                 steps {
                     script {
-                        sh 'mvn -s .settings.xml clean package'
+                        sh 'echo "registry.${FQDN}/${NAME}:${VERSION}"'
                     }
                 }
             }
+//            stage('Test/Build') {
+//                environment {
+//                    NEXUS_CREDS = credentials("${TAVROS_REG_CREDS}")
+//                    FQDN = "${TAVROS_FQDN}"
+//                }
+//                steps {
+//                    script {
+//                        sh 'mvn -s .settings.xml clean package'
+//                    }
+//                }
+//            }
             stage('Push with Kaniko') {
                 steps {
                     container('kaniko') {
                         sh '''
-                        cat /kaniko/.docker/config.json
+                        echo "registry.${FQDN}/${NAME}:${VERSION}"
+                        echo "Running kaniko cmd..."
                         '''
                     }
                 }
