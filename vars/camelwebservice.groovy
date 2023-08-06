@@ -23,12 +23,12 @@ def call(Map args = [:]) {
                           runAsUser: 1000
                         env:
                         - name: DOCKER_HOST 
-                          value: tcp://localhost:2376
+                          value: tcp://localhost:2375
                         command: ["/bin/sh", "-c"]
                         args:
                         - tail -f /dev/null
                       - name: dind-daemon 
-                        image: docker:24.0.2-dind-alpine3.18
+                        image: docker:18.06-dind
                         resources: 
                         requests: 
                           cpu: 20m 
