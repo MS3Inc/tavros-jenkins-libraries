@@ -46,46 +46,23 @@ def call(Map args = [:]) {
             }
         }
         stages {
+            stage('Test Stage') {
+                steps {
+                    script {
+                        sh 'echo "Running first stage"'
+                    }
+                }
+            }
             stage('Test/Build/Push Camel API') {
                 environment {
-                    NEXUS_CREDS = credentials("${TAVROS_NEXUS_CREDS}")
+                    NEXUS_CREDS = credentials("${TAVROS_REG_CREDS}")
                     FQDN = "${TAVROS_FQDN}"
                 }
                 steps {
                     script {
+                        sh 'echo "Running deploy script"'
                         utils.shResource "maven-deploy.sh"
-                    }
-                }
-            }
-            stage('Update Helm Release') {
-                environment {
-                    GIT_CREDS = credentials("${TAVROS_GIT_CREDS}")
-                    GIT_HOST = "${TAVROS_GIT_HOST}"
-                    PROJECT_VERSION = sh(returnStdout: true, script: "mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression=project.version -q -DforceStdout").trim()
-                    DEFAULT_ENV = "${"${DEFAULT_ENV}" == null ? 'dev' : "${DEFAULT_ENV}"}"
-                }
-                steps {
-                    container('git') {
-                        dir("tavros-platform") {
-                            checkout([
-                                    $class           : 'GitSCM',
-                                    branches         : [[name: '*/main']],
-                                    extensions       : [[$class: 'LocalBranch', localBranch: "**"]],
-                                    userRemoteConfigs: [[
-                                                                credentialsId: "${TAVROS_GIT_CREDS}",
-                                                                url          : "https://${TAVROS_GIT_HOST}/tavros/platform.git"
-                                                        ]]
-                            ])
-                        }
-
-                        script {
-                            if (env.BUILD_USER_EMAIL == null) {
-                                env.BUILD_USER_EMAIL = ""
-                                env.BUILD_USER = "Jenkins"
-                            }
-
-                            utils.shResource "update-helm-release.sh"
-                        }
+                        sh 'echo "After running deploy script"'
                     }
                 }
             }
