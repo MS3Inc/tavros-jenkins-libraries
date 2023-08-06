@@ -7,9 +7,8 @@ CURRENT_API=$(echo ${GIT_URL%".git"} | grep -Eo '[^/]+$')
 echo ${GIT_URL} \
   && cd tavros-platform \
   && echo "Working directory: $PWD" \
-  && git config --add safe.directory "$PWD" \
   && cd test/$CURRENT_API \
-  && sed -i "s/tag:.*/tag: '${PROJECT_VERSION}'/g" release.yaml \
+  && sed -i "s/tag:.*/tag: '${VERSION}'/g" release.yaml \
   && cat release.yaml \
   && cd ../.. \
   && echo "Changing git origin" \
@@ -23,6 +22,6 @@ echo ${GIT_URL} \
   && if [[ $GIT_STATUS == *"nothing to commit"* ]]; then
       printf "\nNo changes to helm release version, no need to commit.";
   else
-      git commit -m "Bump ${DEFAULT_ENV}/$CURRENT_API/release.yaml to ${PROJECT_VERSION}" \
+      git commit -m "Bump test/$CURRENT_API/release.yaml to ${VERSION}" \
       && git push -u origin main
   fi
