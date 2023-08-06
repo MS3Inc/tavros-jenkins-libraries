@@ -29,8 +29,8 @@ def call(Map args = [:]) {
                         image: docker:24.0.2-dind-alpine3.18
                         resources: 
                         requests: 
-                          cpu: 20m 
-                          memory: 512Mi 
+                          cpu: 500m 
+                          memory: 1024Mi 
                         securityContext: 
                           privileged: true 
                         volumeMounts: 
