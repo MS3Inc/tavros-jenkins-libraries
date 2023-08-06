@@ -4,6 +4,10 @@ def call(Map args = [:]) {
     pipeline {
         agent {
             kubernetes {
+                containerTemplate {
+                    name 'jnlp'
+                    resourceRequestCpu "500m"
+                }
                 yaml '''
                     apiVersion: v1
                     kind: Pod
@@ -29,8 +33,8 @@ def call(Map args = [:]) {
                         image: docker:24.0.2-dind-alpine3.18
                         resources: 
                         requests: 
-                          cpu: 500m 
-                          memory: 1024Mi 
+                          cpu: 20m 
+                          memory: 512Mi 
                         securityContext: 
                           privileged: true 
                         volumeMounts: 
