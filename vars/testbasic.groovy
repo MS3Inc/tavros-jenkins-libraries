@@ -6,7 +6,9 @@ def call(Map args = [:]) {
             kubernetes {
                 containerTemplate {
                     name 'jnlp'
-                    resourceRequestCpu '50m'
+                    image 'jenkins/inbound-agent:3107.v665000b_51092-2'
+                    resourceRequestCpu '500m'
+                    resourceRequestMemory '1024Mi'
                 }
                 yaml '''
                     apiVersion: v1
