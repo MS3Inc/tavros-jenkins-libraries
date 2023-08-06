@@ -44,22 +44,22 @@ def call(Map args = [:]) {
                 defaultContainer 'maven'
             }
         }
+        environment {
+            FQDN = """${sh(
+                    returnStdout: true,
+                    script: 'mvn help:evaluate -Dexpression=registry.host -q -DforceStdout'
+            )}"""
+            VERSION = """${sh(
+                    returnStdout: true,
+                    script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout'
+            )}"""
+            NAME = """${sh(
+                    returnStdout: true,
+                    script: 'mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout'
+            )}"""
+        }
         stages {
             stage('Test Stage') {
-                environment {
-                    FQDN = """${sh(
-                            returnStdout: true,
-                            script: 'mvn help:evaluate -Dexpression=registry.host -q -DforceStdout'
-                    )}"""
-                    VERSION = """${sh(
-                            returnStdout: true,
-                            script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout'
-                    )}"""
-                    NAME = """${sh(
-                            returnStdout: true,
-                            script: 'mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout'
-                    )}"""
-                }
                 steps {
                     script {
                         sh 'echo "registry.${FQDN}/${NAME}:${VERSION}"'
