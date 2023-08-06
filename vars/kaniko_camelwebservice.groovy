@@ -75,6 +75,7 @@ def call(Map args = [:]) {
                     container('kaniko') {
                         sh '''
                         echo "Running kaniko cmd"
+                        ls
                         /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="registry.${FQDN}/${NAME}:${VERSION}"
                         '''
                     }
