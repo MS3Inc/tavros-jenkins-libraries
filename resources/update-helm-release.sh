@@ -5,9 +5,9 @@ set -o errexit
 CURRENT_API=$(echo ${GIT_URL%".git"} | grep -Eo '[^/]+$')
 
 echo ${GIT_URL} \
-  && echo "Working directory: $PWD" \
   && cd tavros-platform \
-  && git config --add safe.directory "$PWD/tavros-platform" \  
+  && echo "Working directory: $PWD" \
+  && git config --add safe.directory "$PWD" \
   && cd test/$CURRENT_API \
   && sed -i "s/tag:.*/tag: '${PROJECT_VERSION}'/g" release.yaml \
   && cat release.yaml \
