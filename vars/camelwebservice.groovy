@@ -23,7 +23,7 @@ def call(Map args = [:]) {
                           runAsUser: 1000
                         env:
                         - name: DOCKER_HOST 
-                          value: tcp://localhost:2375 
+                          value: tcp://localhost:2376
                         command: ["/bin/sh", "-c"]
                         args:
                         - tail -f /dev/null
