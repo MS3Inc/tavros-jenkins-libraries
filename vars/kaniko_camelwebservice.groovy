@@ -66,7 +66,7 @@ def call(Map args = [:]) {
                 }
                 steps {
                     script {
-                        sh 'mvn -s .settings.xml clean package'
+                        sh 'mvn clean package'
                     }
                 }
             }
@@ -81,7 +81,36 @@ def call(Map args = [:]) {
                     }
                 }
             }
+            stage('Update Helm Release') {
+                environment {
+                    GIT_CREDS = credentials("${TAVROS_GIT_CREDS}")
+                    GIT_HOST = "${TAVROS_GIT_HOST}"
+                }
+                steps {
+                    container('git') {
+                        dir("tavros-platform") {
+                            checkout([
+                                    $class           : 'GitSCM',
+                                    branches         : [[name: '*/main']],
+                                    extensions       : [[$class: 'LocalBranch', localBranch: "**"]],
+                                    userRemoteConfigs: [[
+                                                                credentialsId: "${TAVROS_GIT_CREDS}",
+                                                                url          : "https://${TAVROS_GIT_HOST}/tavros/platform.git"
+                                                        ]]
+                            ])
+                        }
 
+                        script {
+                            if (env.BUILD_USER_EMAIL == null) {
+                                env.BUILD_USER_EMAIL = ""
+                                env.BUILD_USER = "Jenkins"
+                            }
+
+                            utils.shResource "update-helm-release.sh"
+                        }
+                    }
+                }
+            }
         }
     }
 }

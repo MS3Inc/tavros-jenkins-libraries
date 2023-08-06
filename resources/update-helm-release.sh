@@ -8,7 +8,7 @@ echo ${GIT_URL} \
   && echo "Working directory: $PWD" \
   && cd tavros-platform \
   && git config --add safe.directory "$PWD/tavros-platform" \  
-  && cd ${DEFAULT_ENV}/$CURRENT_API \
+  && cd test/$CURRENT_API \
   && sed -i "s/tag:.*/tag: '${PROJECT_VERSION}'/g" release.yaml \
   && cat release.yaml \
   && cd ../.. \
