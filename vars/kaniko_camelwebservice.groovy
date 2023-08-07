@@ -49,39 +49,30 @@ def call(Map args = [:]) {
                     returnStdout: true,
                     script: 'mvn help:evaluate -Dexpression=registry.host -q -DforceStdout'
             )}"""
-//            VERSION = """${sh(
-//                    returnStdout: true,
-//                    script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout'
-//            )}"""
-            VERSION = '2.0.0'
+            VERSION = """${sh(
+                    returnStdout: true,
+                    script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout'
+            )}"""
             NAME = """${sh(
                     returnStdout: true,
                     script: 'mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout'
             )}"""
         }
         stages {
-//            stage('Test/Build') {
-//                environment {
-//                    NEXUS_CREDS = credentials("${TAVROS_REG_CREDS}")
-//                    FQDN = "${TAVROS_FQDN}"
-//                }
-//                steps {
-//                    script {
-//                        sh 'mvn clean package'
-//                    }
-//                }
-//            }
-//            stage('Push with Kaniko') {
-//                steps {
-//                    container('kaniko') {
-//                        sh '''
-//                        echo "Running kaniko cmd"
-//                        ls
-//                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="registry.${FQDN}/${NAME}:${VERSION}"
-//                        '''
-//                    }
-//                }
-//            }
+            stage('Test/Build') {
+                steps {
+                    script {
+                        sh 'mvn clean package'
+                    }
+                }
+            }
+            stage('Push with Kaniko') {
+                steps {
+                    container('kaniko') {
+                        sh 'kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="registry.${FQDN}/${NAME}:${VERSION}"'
+                    }
+                }
+            }
             stage('Update Helm Release') {
                 environment {
                     GIT_CREDS = credentials("${TAVROS_GIT_CREDS}")
