@@ -73,12 +73,16 @@ def call() {
         stages {
             stage('Checkout Spec Repo') {
                 steps  {
-                    dir("openapi") {
-                        // TODO: add back functionality to check out via tags?
-                        withCredentials([usernamePassword(credentialsId: "${TAVROS_GIT_CREDS}", usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]){
-                            sh('''
-                                git clone "https://$GIT_USERNAME:$GIT_PASSWORD@${GIT_HOST}/${ORG}/${API_REPO_NAME}.git"
-                            ''')
+                    container('git') {
+                        dir("openapi") {
+                            checkout([
+                                    $class: 'GitSCM',
+                                    branches: [[name: "${TAG}" ? "refs/tags/${TAG}" : "*/main"]],
+                                    userRemoteConfigs: [[
+                                                                credentialsId: "${TAVROS_GIT_CREDS}",
+                                                                url: "https://${GIT_HOST}/${ORG}/${API_REPO_NAME}.git"
+                                                        ]]
+                            ])
                         }
                     }
                 }
