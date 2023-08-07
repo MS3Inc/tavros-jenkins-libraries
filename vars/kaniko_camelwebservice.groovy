@@ -69,7 +69,11 @@ def call(Map args = [:]) {
             stage('Push with Kaniko') {
                 steps {
                     container('kaniko') {
-                        sh 'kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="registry.${FQDN}/${NAME}:${VERSION}"'
+                        sh '''
+                        echo "Running kaniko cmd"
+                        ls
+                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="registry.${FQDN}/${NAME}:${VERSION}"
+                        '''
                     }
                 }
             }
