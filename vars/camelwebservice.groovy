@@ -21,48 +21,88 @@ def call(Map args = [:]) {
                         image: maven:3.8.1-jdk-11-slim
                         securityContext:
                           runAsUser: 1000
-                        env:
-                        - name: DOCKER_HOST 
-                          value: tcp://localhost:2376
                         command: ["/bin/sh", "-c"]
                         args:
                         - tail -f /dev/null
-                      - name: dind-daemon 
-                        image: docker:24.0.2-dind-alpine3.18
-                        resources: 
-                        requests: 
-                          cpu: 20m 
-                          memory: 512Mi 
-                        securityContext: 
-                          privileged: true 
-                        volumeMounts: 
-                        - name: graph-storage 
-                          mountPath: /var/lib/docker  
-                      volumes: 
-                      - name: graph-storage 
-                        emptyDir: {}
+                      - name: kaniko
+                        image: gcr.io/kaniko-project/executor:debug
+                        command:
+                        - sleep
+                        args:
+                        - 9999999
+                        volumeMounts:
+                        - name: kaniko-secret
+                          mountPath: /kaniko/.docker
+                      volumes:
+                      - name: kaniko-secret
+                        secret:
+                            secretName: tavros-artifacts-registry
+                            items:
+                            - key: .dockerconfigjson
+                              path: config.json
                 '''
                 defaultContainer 'maven'
             }
         }
+        environment {
+            FQDN = """${sh(
+                    returnStdout: true,
+                    script: 'mvn help:evaluate -Dexpression=registry.host -q -DforceStdout'
+            )}"""
+            VERSION = """${sh(
+                    returnStdout: true,
+                    script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout'
+            )}"""
+            NAME = """${sh(
+                    returnStdout: true,
+                    script: 'mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout'
+            )}"""
+        }
         stages {
-            stage('Test Stage') {
+            stage('Test/Build') {
                 steps {
                     script {
-                        sh 'echo "Running first stage"'
+                        sh 'mvn clean package'
                     }
                 }
             }
-            stage('Test/Build/Push Camel API') {
+            stage('Push with Kaniko') {
+                steps {
+                    container('kaniko') {
+                        sh '''
+                        echo "Running kaniko cmd"
+                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="registry.${FQDN}/${NAME}:${VERSION}"
+                        '''
+                    }
+                }
+            }
+            stage('Update Helm Release') {
                 environment {
-                    NEXUS_CREDS = credentials("${TAVROS_REG_CREDS}")
-                    FQDN = "${TAVROS_FQDN}"
+                    GIT_CREDS = credentials("${TAVROS_GIT_CREDS}")
+                    GIT_HOST = "${TAVROS_GIT_HOST}"
                 }
                 steps {
-                    script {
-                        sh 'echo "Running deploy script"'
-                        utils.shResource "maven-deploy.sh"
-                        sh 'echo "After running deploy script"'
+                    container('git') {
+                        dir("tavros-platform") {
+                            checkout([
+                                    $class           : 'GitSCM',
+                                    branches         : [[name: '*/main']],
+                                    extensions       : [[$class: 'LocalBranch', localBranch: "**"]],
+                                    userRemoteConfigs: [[
+                                                                credentialsId: "${TAVROS_GIT_CREDS}",
+                                                                url          : "https://${TAVROS_GIT_HOST}/tavros/platform.git"
+                                                        ]]
+                            ])
+                        }
+
+                        script {
+                            if (env.BUILD_USER_EMAIL == null) {
+                                env.BUILD_USER_EMAIL = ""
+                                env.BUILD_USER = "Jenkins"
+                            }
+
+                            utils.shResource "update-helm-release.sh"
+                        }
                     }
                 }
             }
