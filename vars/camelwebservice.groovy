@@ -45,10 +45,6 @@ def call(Map args = [:]) {
             }
         }
         environment {
-            FQDN = """${sh(
-                    returnStdout: true,
-                    script: 'mvn help:evaluate -Dexpression=registry.host -q -DforceStdout'
-            )}"""
             VERSION = """${sh(
                     returnStdout: true,
                     script: 'mvn help:evaluate -Dexpression=project.version -q -DforceStdout'
@@ -71,7 +67,7 @@ def call(Map args = [:]) {
                     container('kaniko') {
                         sh '''
                         echo "Running kaniko cmd"
-                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="registry.${FQDN}/${NAME}:${VERSION}"
+                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="${TAVROS_REG_HOST}/${NAME}:${VERSION}"
                         '''
                     }
                 }
