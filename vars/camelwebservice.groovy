@@ -53,33 +53,25 @@ def call(Map args = [:]) {
                     returnStdout: true,
                     script: 'mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout'
             )}"""
-            HASH = "CHANGEME"
         }
         stages {
-            stage('TESt') {
+            stage('Test/Build') {
                 steps {
                     script {
-                        sh 'echo ${GIT_COMMIT}'
+                        sh 'mvn clean verify'
                     }
                 }
             }
-//            stage('Test/Build') {
-//                steps {
-//                    script {
-//                        sh 'mvn clean verify'
-//                    }
-//                }
-//            }
-//            stage('Push with Kaniko') {
-//                steps {
-//                    container('kaniko') {
-//                        sh '''
-//                        echo "Running kaniko cmd"
-//                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="${TAVROS_REG_HOST}/${NAME}:${VERSION}"
-//                        '''
-//                    }
-//                }
-//            }
+            stage('Push with Kaniko') {
+                steps {
+                    container('kaniko') {
+                        sh '''
+                        echo "Running kaniko cmd"
+                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="${TAVROS_REG_HOST}/${NAME}:${VERSION}"
+                        '''
+                    }
+                }
+            }
             stage('Update Helm Release') {
                 environment {
                     GIT_CREDS = credentials("${TAVROS_GIT_CREDS}")
