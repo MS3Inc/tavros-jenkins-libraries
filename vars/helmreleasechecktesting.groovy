@@ -80,7 +80,8 @@ def call(Map args = [:]) {
                                 env.BUILD_USER = "Jenkins"
                             }
 
-                            utils.shResource "check-if-helm-release-exists.sh"
+                            output = utils.shResource "check-if-helm-release-exists.sh"
+                            echo "The exit code is ${output}"
                         }
                     }
                 }
