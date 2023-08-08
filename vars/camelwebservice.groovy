@@ -53,8 +53,16 @@ def call(Map args = [:]) {
                     returnStdout: true,
                     script: 'mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout'
             )}"""
+            HASH = "CHANGEME"
         }
         stages {
+            stage('TESt') {
+                steps {
+                    script {
+                        sh 'echo ${GIT_COMMIT}'
+                    }
+                }
+            }
 //            stage('Test/Build') {
 //                steps {
 //                    script {

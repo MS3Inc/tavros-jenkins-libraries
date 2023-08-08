@@ -2,7 +2,7 @@
 set -o nounset
 set -o errexit
 
-  sed -i "s/last-commit:.*/last-commit: '123'/g" "test/${NAME}/release.yaml" \
+  sed -i "s/last-commit:.*/last-commit: '${GIT_COMMIT}'/g" "test/${NAME}/release.yaml" \
   && cat "test/${NAME}/release.yaml" \
   && echo "Changing git origin" \
   && git config --global --add safe.directory "$WORKSPACE/tavros-platform" \
