@@ -25,7 +25,7 @@ def call(Map args = [:]) {
                         args:
                         - tail -f /dev/null
                       - name: kaniko
-                        image: gcr.io/kaniko-project/executor:v1.13.0
+                        image: gcr.io/kaniko-project/executor:v1.13.0-debug
                         command:
                         - sleep
                         args:
