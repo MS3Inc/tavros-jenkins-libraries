@@ -20,13 +20,12 @@ Given a repo that uses camelwebservice() pipeline
 When commit is made to main
 Then
     Platform repo code is pulled
-    Next dev version is bumped
     Code is packaged
     Image is built
     Image is pushed to registry.$FQDN/$NAME:$VERSION and exists in internal nexus repo
     If helm release doesn't exist
         Helm release is created in test/$NAME/release.yaml
-    If commit changes
-        Helm release is updated with commit number
+    Helm release is updated with last commit hash as annotation
     Changes to platform repo are committed and pushed
+    Flux sees change and updates pod
 ```
