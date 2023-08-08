@@ -58,7 +58,7 @@ def call(Map args = [:]) {
             stage('Test/Build') {
                 steps {
                     script {
-                        sh 'mvn clean package'
+                        sh 'mvn clean verify'
                     }
                 }
             }
