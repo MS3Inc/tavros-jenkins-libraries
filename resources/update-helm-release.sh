@@ -3,7 +3,7 @@ set -o nounset
 set -o errexit
 
 cd "test/${NAME}" \
-  && sed -i "s/tag:.*/tag: '${VERSION}'/g" release.yaml \
+  && sed -i "s/last-commit:.*/last-commit: '789'/g" release.yaml \
   && cat release.yaml \
   && cd ../.. \
   && echo "Changing git origin" \
@@ -15,9 +15,5 @@ cd "test/${NAME}" \
   && git config --global user.name "${BUILD_USER}" \
   && git add . \
   && GIT_STATUS=$(git status) \
-  && if [[ $GIT_STATUS == *"nothing to commit"* ]]; then
-      printf "\nNo changes to helm release version, no need to commit.";
-  else
-      git commit -m "Bump test/${NAME}/release.yaml to ${VERSION}" \
-      && git push -u origin main
-  fi
+  && git commit -m "Bump test/${NAME}/release.yaml to ${VERSION}" \
+  && git push -u origin main
