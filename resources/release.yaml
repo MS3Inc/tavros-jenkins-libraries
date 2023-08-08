@@ -1,0 +1,29 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: api-repo
+  namespace: test
+spec:
+  targetNamespace: test
+  interval: 10m
+  chart:
+    spec:
+      chart: camel-web-service
+      version: 0.2.3
+      sourceRef:
+        kind: HelmRepository
+        name: tavros
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    fullnameOverride: api-repo
+    image:
+      repository: registry.rlratcliffe.com/api-repo
+      tag: '0.1.1-SNAPSHOT'
+    ingress:
+      enabled: false
