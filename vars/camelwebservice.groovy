@@ -89,15 +89,23 @@ def call(Map args = [:]) {
                                                                 url          : "https://${TAVROS_GIT_HOST}/tavros/platform.git"
                                                         ]]
                             ])
-                        }
 
-                        script {
-                            if (env.BUILD_USER_EMAIL == null) {
-                                env.BUILD_USER_EMAIL = ""
-                                env.BUILD_USER = "Jenkins"
+                            script {
+                                if (env.BUILD_USER_EMAIL == null) {
+                                    env.BUILD_USER_EMAIL = ""
+                                    env.BUILD_USER = "Jenkins"
+                                }
+
+                                try {
+                                    utils.shResource "check-if-helm-release-exists.sh"
+                                } catch (err) {
+                                    echo "Helm release doesn't exist. Creating file."
+                                    utils.writeResource "release.yaml", "test/${NAME}/release.yaml"
+                                }
+
+                                utils.shResource "update-helm-release.sh"
+
                             }
-
-                            utils.shResource "update-helm-release.sh"
                         }
                     }
                 }
