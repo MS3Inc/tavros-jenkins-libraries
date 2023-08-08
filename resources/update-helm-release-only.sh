@@ -2,9 +2,8 @@
 set -o nounset
 set -o errexit
 
-CURRENT_API=$(echo ${GIT_URL%".git"} | grep -Eo '[^/]+$')
-
-sed -i "s/tag:.*/tag: '${VERSION}'/g" release.yaml \
+cd "test/${NAME}" \
+  && sed -i "s/tag:.*/tag: '${VERSION}'/g" release.yaml \
   && cat release.yaml \
   && cd ../.. \
   && echo "Changing git origin" \
@@ -19,6 +18,6 @@ sed -i "s/tag:.*/tag: '${VERSION}'/g" release.yaml \
   && if [[ $GIT_STATUS == *"nothing to commit"* ]]; then
       printf "\nNo changes to helm release version, no need to commit.";
   else
-      git commit -m "Bump test/$CURRENT_API/release.yaml to ${VERSION}" \
+      git commit -m "Bump test/${NAME}/release.yaml to ${VERSION}" \
       && git push -u origin main
   fi

@@ -83,9 +83,9 @@ def call(Map args = [:]) {
                                 utils.shResource "check-if-helm-release-exists.sh"
                             } catch (err) {
                                 echo "Helm release doesn't exist. Creating file."
-                                utils.writeResource "release.yaml", "release.yaml"
+                                utils.writeResource "release.yaml", "test/${NAME}/release.yaml"
                             }
-                            sh 'ls'
+
                             utils.shResource "update-helm-release-only.sh"
 
                         }
