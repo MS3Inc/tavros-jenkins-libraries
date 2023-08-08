@@ -2,10 +2,8 @@
 set -o nounset
 set -o errexit
 
-cd "test/${NAME}" \
-  && sed -i "s/last-commit:.*/last-commit: '789'/g" release.yaml \
-  && cat release.yaml \
-  && cd ../.. \
+  sed -i "s/last-commit:.*/last-commit: '123'/g" "test/${NAME}/release.yaml" \
+  && cat "test/${NAME}/release.yaml" \
   && echo "Changing git origin" \
   && git config --global --add safe.directory "$WORKSPACE/tavros-platform" \
   && git remote remove origin \
