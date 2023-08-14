@@ -76,6 +76,8 @@ def call(Map args = [:]) {
                 environment {
                     GIT_CREDS = credentials("${TAVROS_GIT_CREDS}")
                     GIT_HOST = "${TAVROS_GIT_HOST}"
+                    NAMESPACE = "dev"
+                    RELEASE_PATH = "${NAMESPACE}/apis/${NAME}-release.yaml"
                 }
                 steps {
                     container('git') {
@@ -99,8 +101,8 @@ def call(Map args = [:]) {
                                 try {
                                     utils.shResource "check-if-helm-release-exists.sh"
                                 } catch (err) {
-                                    echo "Helm release doesn't exist. Creating file."
-                                    utils.writeResource "release.yaml", "test/${NAME}/release.yaml"
+                                    echo "Helm release doesn't exist. Creating file: ${RELEASE_PATH}"
+                                    utils.writeResource "release.yaml", "${RELEASE_PATH}"
                                 }
 
                                 utils.shResource "update-helm-release.sh"

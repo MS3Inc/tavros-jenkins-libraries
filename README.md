@@ -21,20 +21,24 @@ TBD
 Given a repo that uses camelwebservice() pipeline
 When commit is made to main
 Then
-    Reepo code is pulled
+    Repo code is pulled
     Code is packaged
     Image is built
     Image is pushed to registry.$FQDN/$NAME:$VERSION and exists in internal nexus repo
     Platform repo is pulled
     If helm release or folder for api doesn't exist
-        Helm release is created in test/$NAME/release.yaml (does folder need to exist?)
+        Helm release is created in dev/apis/$NAME-release.yaml
         Validations for helm release are:
-            metadata.namespace == test
-            spec.targetNamespace == test
+            metadata.namespace == dev
+            spec.targetNamespace == dev
             metadata.name == $NAME
             spec.values.fullnameOverride == $NAME
             spec.values.image.repository == registry.$FQDN/$NAME
+            tag == tag from commit
+            spec.values.ingress.hosts[0].host == apps.sandbox.$FQDN
+            spec.values.ingress.hosts[0].paths == "/dev/$NAME"
+            spec.values.podAnnotations.list-commit == current git commit of api
     Helm release is updated with last commit hash as annotation
     Changes to platform repo are committed and pushed
-    Flux sees change and updates pod
+    Flux sees change and creates/updates pod
 ```
