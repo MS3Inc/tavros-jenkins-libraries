@@ -68,7 +68,7 @@ def call() {
         }
         environment {
             GIT_CREDS = credentials("${TAVROS_GIT_CREDS}")
-            GIT_HOST = "code.${TAVROS_HOST}"
+            GIT_HOST = "${TAVROS_GIT_HOST}"
         }
         stages {
             stage('Checkout Spec Repo') {
