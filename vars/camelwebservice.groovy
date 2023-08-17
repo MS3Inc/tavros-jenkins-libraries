@@ -67,7 +67,7 @@ def call(Map args = [:]) {
                     container('kaniko') {
                         sh '''
                         echo "Running kaniko cmd"
-                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="${TAVROS_REG_HOST}/${NAME}:${VERSION}"
+                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="registry.${TAVROS_HOST}/${NAME}:${VERSION}"
                         '''
                     }
                 }
@@ -75,7 +75,7 @@ def call(Map args = [:]) {
             stage('Update Helm Release') {
                 environment {
                     GIT_CREDS = credentials("${TAVROS_GIT_CREDS}")
-                    GIT_HOST = "${TAVROS_GIT_HOST}"
+                    GIT_HOST = "code.${TAVROS_HOST}"
                     NAMESPACE = "dev"
                     RELEASE_PATH = "${NAMESPACE}/apis/${NAME}-release.yaml"
                 }
@@ -88,7 +88,7 @@ def call(Map args = [:]) {
                                     extensions       : [[$class: 'LocalBranch', localBranch: "**"]],
                                     userRemoteConfigs: [[
                                                                 credentialsId: "${TAVROS_GIT_CREDS}",
-                                                                url          : "https://${TAVROS_GIT_HOST}/tavros/platform.git"
+                                                                url          : "https://${GIT_HOST}/tavros/platform.git"
                                                         ]]
                             ])
 
