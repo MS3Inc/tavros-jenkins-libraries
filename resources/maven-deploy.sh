@@ -2,7 +2,7 @@
 
 FILE=.settings.xml
 if [ -f "$FILE" ]; then
-    printf "\nUsing settings.xml"; mvn -s .settings.xml clean package k8s:build k8s:push;
+    printf "\nUsing settings.xml"; mvn -s .settings.xml clean deploy;
 else
-    printf "\nNot using provided settings.xml"; mvn clean clean package k8s:build k8s:push;
+    printf "\nNot using provided settings.xml"; mvn clean deploy;
 fi
