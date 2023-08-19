@@ -41,4 +41,8 @@ Then
     Helm release is updated with last commit hash as annotation
     Changes to platform repo are committed and pushed
     Flux sees change and creates/updates pod
+    
+Given two pipelines that are running camelwebservice() at the same time
+When updates are rejected in pipeline B because pipeline A finished first
+Then pipeline B doesn't fail
 ```
