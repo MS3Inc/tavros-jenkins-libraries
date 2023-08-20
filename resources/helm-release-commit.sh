@@ -2,9 +2,6 @@
 set -o nounset
 set -o errexit
 
-printf "\nAdding release...\n" \
+printf "\nAdding release and committing...\n" \
 && git add . \
-&& git commit -m "Update ${RELEASE_PATH} with ${GIT_COMMIT}" \
-&& printf "\nPulling main to get latest...\n" \
-&& git pull origin main \
-&& git push -u origin main
+&& git commit -m "Update ${RELEASE_PATH} with ${GIT_COMMIT}"

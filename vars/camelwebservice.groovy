@@ -108,6 +108,7 @@ def call(Map args = [:]) {
                                 utils.shResource "helm-release-update.sh"
                                 utils.shResource "helm-release-git-setup.sh"
                                 utils.shResource "helm-release-commit.sh"
+                                utils.shResource "helm-release-push.sh"
                             }
                         }
                     }

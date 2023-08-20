@@ -9,4 +9,4 @@ printf "\nChanging git origin..." \
 && printf "\nAdding git configuration..." \
 && git config --global user.email "${BUILD_USER_EMAIL}" \
 && git config --global user.name "${BUILD_USER}" \
-&& git config pull.ff only
+&& git config pull.rebase false
