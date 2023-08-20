@@ -6,7 +6,7 @@ setup() {
 }
 
 @test "when editing helm release then new values are correct" {
-    helmrelease=`cat resources/helmrelease.yaml`
-    expected_helmrelease=`cat resources/expected-results/expected-helmrelease.yaml`
+    helmrelease=`cat test/resources/helmrelease.yaml`
+    expected_helmrelease=`cat test/resources/expected-results/expected-helmrelease.yaml`
     [ "$helmrelease" == "$expected_helmrelease" ]
 }
