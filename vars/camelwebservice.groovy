@@ -55,23 +55,23 @@ def call(Map args = [:]) {
             )}"""
         }
         stages {
-//            stage('Test/Build') {
-//                steps {
-//                    script {
-//                        sh 'mvn clean verify'
-//                    }
-//                }
-//            }
-//            stage('Push with Kaniko') {
-//                steps {
-//                    container('kaniko') {
-//                        sh '''
-//                        echo "Running kaniko cmd"
-//                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="${TAVROS_REG_HOST}/${NAME}:${VERSION}"
-//                        '''
-//                    }
-//                }
-//            }
+            stage('Test/Build') {
+                steps {
+                    script {
+                        sh 'mvn clean verify'
+                    }
+                }
+            }
+            stage('Push with Kaniko') {
+                steps {
+                    container('kaniko') {
+                        sh '''
+                        echo "Running kaniko cmd"
+                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="${TAVROS_REG_HOST}/${NAME}:${VERSION}"
+                        '''
+                    }
+                }
+            }
             stage('Update Helm Release') {
                 environment {
                     GIT_CREDS = credentials("${TAVROS_GIT_CREDS}")
