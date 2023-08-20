@@ -105,8 +105,9 @@ def call(Map args = [:]) {
                                     utils.writeResource "release.yaml", "${RELEASE_PATH}"
                                 }
 
-                                utils.shResource "update-helm-release.sh"
-
+                                utils.shResource "helm-release-update.sh"
+                                utils.shResource "helm-release-git-setup.sh"
+                                utils.shResource "helm-release-commit.sh"
                             }
                         }
                     }
