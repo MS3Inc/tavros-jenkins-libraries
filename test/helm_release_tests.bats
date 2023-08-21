@@ -4,6 +4,7 @@ setup() {
     DIR="$( cd "$( dirname "$BATS_TEST_FILENAME" )" >/dev/null 2>&1 && pwd )"
     CURRENT_PATH="$DIR/resources"
     PROJECT_RESOURCES_PATH="$CURRENT_PATH/../../resources"
+    # check scripts are executable first
 }
 
 @test "when editing helm release then new values are correct" {

@@ -1,0 +1,43 @@
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: api-repo
+  namespace: dev
+spec:
+  targetNamespace: dev
+  interval: 10m
+  chart:
+    spec:
+      chart: camel-web-service
+      version: 0.2.5
+      sourceRef:
+        kind: HelmRepository
+        name: tavros
+        namespace: flux-system
+  install:
+    remediation:
+      retries: 5
+  upgrade:
+    remediation:
+      retries: 5
+  values:
+    fullnameOverride: api-repo
+    image:
+      repository: registry.tavros.com/api-repo
+      tag: '0.1.5-SNAPSHOT'
+    ingress:
+      enabled: false
+      annotations:
+        konghq.com/preserve-host: "false"
+        konghq.com/strip-path: "true"
+        konghq.com/protocols: https
+        kubernetes.io/ingress.class: sandbox
+        cert-manager.io/cluster-issuer: tavros
+        konghq.com/https-redirect-status-code: '302'
+        # add kong plugins for security
+      hosts:
+      - host: apps.sandbox.tavros.com
+        paths:
+        - "/dev/api-repo"
+    podAnnotations:
+      last-commit: "bcc1cx3cwd44f2269da9ab008be7831196cce7b9"
