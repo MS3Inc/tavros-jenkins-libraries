@@ -24,7 +24,7 @@ spec:
     fullnameOverride: api-repo
     image:
       repository: registry.tavros.com/api-repo
-      tag: '0.1.0-SNAPSHOT'
+      tag: '0.1.5-SNAPSHOT'
     ingress:
       enabled: false
       annotations:
@@ -36,8 +36,8 @@ spec:
         konghq.com/https-redirect-status-code: '302'
         # add kong plugins for security
       hosts:
-        - host: apps.sandbox.tavros.com
-          paths:
-            - "/dev/api-repo"
+      - host: apps.sandbox.tavros.com
+        paths:
+        - "/dev/api-repo"
     podAnnotations:
       last-commit: "bcc1cx3cwd44f2269da9ab008be7831196cce7b9"
