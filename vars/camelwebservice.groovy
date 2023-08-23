@@ -53,6 +53,7 @@ def call(Map args = [:]) {
                     returnStdout: true,
                     script: 'mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout'
             )}"""
+            REG_CREDS = credentials("${TAVROS_REG_CREDS}")
         }
         stages {
             stage('Test/Build') {

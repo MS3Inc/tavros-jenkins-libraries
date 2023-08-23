@@ -26,7 +26,7 @@ def call(Map args = [:]) {
         stages {
             stage('Test/Build/Push') {
                 environment {
-                    NEXUS_CREDS = credentials("${TAVROS_NEXUS_CREDS}")
+                    REG_CREDS = credentials("${TAVROS_REG_CREDS}")
                 }
                 steps {
                     script {
