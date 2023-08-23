@@ -58,7 +58,7 @@ def call(Map args = [:]) {
             stage('Test/Build') {
                 steps {
                     script {
-                        sh 'mvn clean verify'
+                        utils.shResource "maven-verify.sh"
                     }
                 }
             }
