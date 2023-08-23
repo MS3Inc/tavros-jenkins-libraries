@@ -38,6 +38,6 @@ spec:
       hosts:
       - host: apps.sandbox.tavros.com
         paths:
-        - "/dev/api-repo"
+        - "/dev/api-repo/"
     podAnnotations:
       last-commit: "bcc1cx3cwd44f2269da9ab008be7831196cce7b9"

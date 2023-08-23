@@ -38,6 +38,6 @@ spec:
       hosts:
       - host: apps.sandbox.<fqdn>
         paths:
-        - "/<namespace>/<name>"
+        - "/<namespace>/<name>/"
     podAnnotations:
       last-commit: "456"
