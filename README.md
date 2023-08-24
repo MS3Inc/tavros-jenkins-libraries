@@ -23,21 +23,12 @@ When commit is made to main
 Then
     Repo code is pulled
     Code is packaged
+        If repo has a dependency in Tavros' Nexus, then that dependency is retrieved
     Image is built
-    Image is pushed to registry.$FQDN/$NAME:$VERSION and exists in internal nexus repo
+    Image is pushed to registry.$FQDN/$NAME:$VERSION `internal` nexus repo
     Platform repo is pulled
     If helm release or folder for api doesn't exist
         Helm release is created in dev/apis/$NAME-release.yaml
-        Validations for helm release are:
-            metadata.namespace == dev
-            spec.targetNamespace == dev
-            metadata.name == $NAME
-            spec.values.fullnameOverride == $NAME
-            spec.values.image.repository == registry.$FQDN/$NAME
-            tag == tag from commit
-            spec.values.ingress.hosts[0].host == apps.sandbox.$FQDN
-            spec.values.ingress.hosts[0].paths == "/dev/$NAME"
-            spec.values.podAnnotations.list-commit == current git commit of api
     Helm release is updated with last commit hash as annotation
     Changes to platform repo are committed and pushed
     Flux sees change and creates/updates pod
@@ -45,4 +36,8 @@ Then
 Given two pipelines that are running camelwebservice() at the same time
 When updates are rejected in pipeline B because pipeline A finished first
 Then pipeline B doesn't fail
+
+Given a repo that uses javadependency() pipeline
+When commit is made to main
+Then java dependency is built and pushed to `maven-releases` or `maven-snapshots` Nexus repo
 ```
