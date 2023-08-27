@@ -12,7 +12,7 @@ def call() {
                     spec:
                       containers:
                       - name: builder
-                        image: fedora
+                        image: atlassian/default-image:4.20230726
                         command:
                         - sleep
                         args:
@@ -32,11 +32,12 @@ def call() {
         parameters {
             string(
                 name: 'ORG',
+                defaultValue: 'tavros',
                 description: 'Required. The organization to create the repository in.'
             )
             string(
                 name: 'API_REPO_NAME',
-                description: 'Required. The name of the repository to create.'
+                description: 'Required. The name of the spec repository to pull from.'
             )
             string(
                 name: 'TAG',
@@ -44,7 +45,7 @@ def call() {
             )
             string(
                 name: 'REPO_NAME',
-                description: 'Required. A name of the new repo.'
+                description: 'Required. A name of the new API implementation repo.'
             )
             string(
                 name: 'REPO_DESC',
@@ -60,10 +61,6 @@ def call() {
                 description: 'Required. The group ID of the new project.'
             )
             string(
-                name: 'ARTIFACT_ID',
-                description: 'Required. The artifact ID (i.e. name) of the new project.'
-            )
-            string(
                 name: 'VERSION',
                 defaultValue: '0.1.0-SNAPSHOT',
                 description: 'Required. The version of the project.'
@@ -76,15 +73,17 @@ def call() {
         stages {
             stage('Checkout Spec Repo') {
                 steps  {
-                    dir("openapi") {
-                        checkout([
-                            $class: 'GitSCM',
-                            branches: [[name: "${TAG}" ? "refs/tags/${TAG}" : "*/main"]],
-                            userRemoteConfigs: [[
-                                credentialsId: "${TAVROS_GIT_CREDS}",
-                                url: "https://${GIT_HOST}/${ORG}/${API_REPO_NAME}.git"
-                            ]]
-                        ])
+                    container('git') {
+                        dir("openapi") {
+                            checkout([
+                                    $class: 'GitSCM',
+                                    branches: [[name: "${TAG}" ? "refs/tags/${TAG}" : "*/main"]],
+                                    userRemoteConfigs: [[
+                                                                credentialsId: "${TAVROS_GIT_CREDS}",
+                                                                url: "https://${GIT_HOST}/${ORG}/${API_REPO_NAME}.git"
+                                                        ]]
+                            ])
+                        }
                     }
                 }
             }
@@ -97,7 +96,7 @@ def call() {
             }
             stage('Setup Project') {
                 environment {
-                    ARCHETYPE_VERSION = "0.2.6"
+                    ARCHETYPE_VERSION = "0.2.7"
                 }
                 steps {
                     container('maven') {
@@ -107,7 +106,7 @@ def call() {
                             }
                         }
                     }
-                    dir("repo/${ARTIFACT_ID}") {
+                    dir("repo/${REPO_NAME}") {
                         script {
                             utils.writeResource "camelwebservice.jenkinsfile", "Jenkinsfile"
                         }
@@ -120,8 +119,8 @@ def call() {
                 }
                 steps {
                     wrap([$class: 'BuildUser']) {
-                        dir("repo/${ARTIFACT_ID}") {
-                            sh 'yum install -y -q git'
+                        dir("repo/${REPO_NAME}") {
+                            sh 'git config --global --add safe.directory "$WORKSPACE/repo/${REPO_NAME}"'
                             script {
                                 utils.shResource "git-init-push.sh"
                             }
