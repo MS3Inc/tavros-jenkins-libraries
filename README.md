@@ -9,12 +9,24 @@ Jenkins in Tavros will utilize a specific version of this repo, so major changes
 Until tests can be automated, these are the manual acceptance tests/expectations of what the pipelines should accomplish.
 
 ## Quickstart − OpenAPI Project
-
-TBD
+```
+Given a run of the quickstart
+When the parameters are passed and name of repo is unique
+Then
+    Spec repo is created using given name
+    Spec repo contains default Pet Store spec and Jenkinsfile with openapi() call
+```
 
 ## Quickstart − Camel Web Service Project
 
-TBD
+```
+Given a run of the quickstart
+When the parameters are passed and name of repo is unique
+Then
+    API repo is created
+    Archetype is run using the api spec (name passed in via parameters)
+    Generated project is committed to the repo     
+```
 
 ## Camel Web Service
 ```
