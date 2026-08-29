@@ -56,10 +56,12 @@ def call() {
             stage('Setup Project') {
                 steps {
                     dir("repo") {
-                        sh '''
-                            curl -sS https://raw.githubusercontent.com/swagger-api/swagger-petstore/swagger-petstore-v3-1.0.5/src/main/resources/openapi.yaml > openapi.yaml
-                        '''
                         script {
+                            // Vendored in this library rather than curled from
+                            // raw.githubusercontent.com at pipeline runtime. A
+                            // third-party URL is an outage and a supply-chain
+                            // exposure the pipeline cannot see coming.
+                            utils.writeResource "openapi-petstore-sample.yaml", "openapi.yaml"
                             utils.writeResource "openapi.jenkinsfile", "Jenkinsfile"
                         }
                     }
