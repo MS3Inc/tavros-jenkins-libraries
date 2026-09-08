@@ -12,13 +12,13 @@ def call() {
                     spec:
                       containers:
                       - name: builder
-                        image: atlassian/default-image:4.20230726
+                        image: atlassian/default-image:5.20250519
                         command:
                         - sleep
                         args:
                         - infinity
                       - name: maven
-                        image: maven:3.6.3-jdk-11
+                        image: maven:3.9.16-eclipse-temurin-21
                         securityContext:
                           runAsUser: 1000
                         command:
@@ -96,7 +96,7 @@ def call() {
             }
             stage('Setup Project') {
                 environment {
-                    ARCHETYPE_VERSION = "0.2.7"
+                    ARCHETYPE_VERSION = "0.3.0"
                 }
                 steps {
                     container('maven') {

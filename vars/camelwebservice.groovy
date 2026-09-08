@@ -12,29 +12,68 @@ def call(Map args = [:]) {
                     spec:
                       containers:
                       - name: git
-                        image: atlassian/default-image:4.20230726
+                        image: atlassian/default-image:5.20250519
                         command:
                         - sleep
                         args:
                         - infinity
                       - name: maven
-                        image: maven:3.8.1-jdk-11-slim
+                        image: maven:3.9.16-eclipse-temurin-21
                         securityContext:
                           runAsUser: 1000
                         command: ["/bin/sh", "-c"]
                         args:
                         - tail -f /dev/null
-                      - name: kaniko
-                        image: gcr.io/kaniko-project/executor:v1.13.0-debug
-                        command:
-                        - sleep
+                      # Replaces gcr.io/kaniko-project/executor. Kaniko was
+                      # ARCHIVED in June 2025 - no development, no security
+                      # updates - which is disqualifying for a platform heading
+                      # into accreditation. buildah is actively maintained,
+                      # daemonless, and needs no privileged container.
+                      # STORAGE_DRIVER=vfs avoids /dev/fuse and extra
+                      # capabilities; slower than overlay, but unprivileged.
+                      # Registry auth is the same secret kaniko used, mounted the
+                      # same way and read via REGISTRY_AUTH_FILE.
+                      - name: buildah
+                        image: quay.io/buildah/stable:v1.43.2
+                        command: ["/bin/sh", "-c"]
                         args:
-                        - 9999999
+                        - tail -f /dev/null
+                        env:
+                        - name: STORAGE_DRIVER
+                          value: vfs
+                        - name: BUILDAH_ISOLATION
+                          value: chroot
+                        - name: REGISTRY_AUTH_FILE
+                          value: /home/build/.docker/config.json
                         volumeMounts:
-                        - name: kaniko-secret
-                          mountPath: /kaniko/.docker
+                        - name: registry-auth
+                          mountPath: /home/build/.docker
+                      # Scan and signing tooling. Caches point at the shared
+                      # workspace rather than each image's default under /root,
+                      # so they work whatever UID the pod runs them as.
+                      - name: trivy
+                        image: aquasec/trivy:0.74.0
+                        command: ["/bin/sh", "-c"]
+                        args:
+                        - tail -f /dev/null
+                        env:
+                        - name: TRIVY_CACHE_DIR
+                          value: /home/jenkins/agent/.cache/trivy
+                      - name: syft
+                        image: anchore/syft:v1.51.1
+                        command: ["/bin/sh", "-c"]
+                        args:
+                        - tail -f /dev/null
+                        env:
+                        - name: SYFT_CACHE_DIR
+                          value: /home/jenkins/agent/.cache/syft
+                      - name: cosign
+                        image: ghcr.io/sigstore/cosign:v3.1.3
+                        command: ["/bin/sh", "-c"]
+                        args:
+                        - tail -f /dev/null
                       volumes:
-                      - name: kaniko-secret
+                      - name: registry-auth
                         secret:
                             secretName: tavros-artifacts-registry
                             items:
@@ -54,6 +93,7 @@ def call(Map args = [:]) {
                     script: 'mvn help:evaluate -Dexpression=project.artifactId -q -DforceStdout'
             )}"""
             REG_CREDS = credentials("${TAVROS_REG_CREDS}")
+            IMAGE = "${TAVROS_REG_HOST}/${NAME}:${VERSION}"
         }
         stages {
             stage('Test/Build') {
@@ -62,14 +102,107 @@ def call(Map args = [:]) {
                         utils.shResource "maven-verify.sh"
                     }
                 }
+                post {
+                    always {
+                        junit allowEmptyResults: true, testResults: 'target/surefire-reports/*.xml'
+                    }
+                }
             }
-            stage('Push with Kaniko') {
+
+            stage('Static Analysis') {
+                when {
+                    expression { return env.TAVROS_SONARQUBE_SERVER?.trim() }
+                }
                 steps {
-                    container('kaniko') {
-                        sh '''
-                        echo "Running kaniko cmd"
-                        /kaniko/executor -f `pwd`/Dockerfile -c `pwd` --destination="${TAVROS_REG_HOST}/${NAME}:${VERSION}"
-                        '''
+                    withSonarQubeEnv("${TAVROS_SONARQUBE_SERVER}") {
+                        script {
+                            utils.shResource "sonar-analysis.sh"
+                        }
+                    }
+                }
+            }
+
+            stage('Dependency Vulnerability Scan') {
+                steps {
+                    container('trivy') {
+                        script {
+                            utils.shResource "scan-dependencies.sh"
+                        }
+                    }
+                }
+                post {
+                    always {
+                        archiveArtifacts artifacts: 'target/security/dependency-scan.*',
+                                         allowEmptyArchive: true, fingerprint: true
+                    }
+                }
+            }
+            stage('Build Image') {
+                steps {
+                    container('buildah') {
+                        script {
+                            utils.shResource "image-build.sh"
+                        }
+                    }
+                }
+            }
+
+            stage('Image Vulnerability Scan') {
+                steps {
+                    container('trivy') {
+                        script {
+                            utils.shResource "scan-image.sh"
+                        }
+                    }
+                }
+                post {
+                    always {
+                        archiveArtifacts artifacts: 'target/security/image-scan.*',
+                                         allowEmptyArchive: true, fingerprint: true
+                    }
+                }
+            }
+
+            stage('Generate SBOM') {
+                steps {
+                    container('syft') {
+                        script {
+                            utils.shResource "sbom-generate.sh"
+                        }
+                    }
+                }
+                post {
+                    always {
+                        archiveArtifacts artifacts: 'target/security/sbom.*',
+                                         allowEmptyArchive: true, fingerprint: true
+                    }
+                }
+            }
+
+            stage('Push Image') {
+                steps {
+                    container('buildah') {
+                        script {
+                            utils.shResource "image-push.sh"
+                        }
+                    }
+                }
+            }
+
+            stage('Sign Image') {
+                when {
+                    expression { return env.TAVROS_COSIGN_KEY_CREDS?.trim() }
+                }
+                steps {
+                    container('cosign') {
+                        withCredentials([
+                            file(credentialsId: "${TAVROS_COSIGN_KEY_CREDS}", variable: 'COSIGN_KEY'),
+                            string(credentialsId: "${TAVROS_COSIGN_PASSWORD_CREDS}", variable: 'COSIGN_PASSWORD')
+                        ]) {
+                            script {
+                                utils.shResource "image-sign.sh"
+                            }
+                        }
                     }
                 }
             }

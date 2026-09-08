@@ -12,7 +12,7 @@ def call(Map args = [:]) {
                     spec:
                       containers:
                       - name: maven
-                        image: maven:3.6.3-jdk-11
+                        image: maven:3.9.16-eclipse-temurin-21
                         securityContext:
                           runAsUser: 1000
                         command:
