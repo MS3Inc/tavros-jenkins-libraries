@@ -12,7 +12,7 @@ def call() {
                     spec:
                       containers:
                       - name: builder
-                        image: fedora
+                        image: atlassian/default-image:4.20230726
                         command:
                         - sleep
                         args:
@@ -24,6 +24,7 @@ def call() {
         parameters {
             string(
                 name: 'ORG',
+                defaultValue: 'tavros',
                 description: 'Required. The organization to create the repository in.'
             )
             string(
@@ -72,7 +73,7 @@ def call() {
                 steps {
                     wrap([$class: 'BuildUser']) {
                         dir("repo") {
-                            sh 'yum install -y -q git'
+                            sh 'git config --global --add safe.directory "$WORKSPACE/repo"'
                             script {
                                 utils.shResource "git-init-push.sh"
                             }

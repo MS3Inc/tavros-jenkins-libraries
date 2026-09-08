@@ -1,0 +1,23 @@
+name: Test Shell Scripts
+
+on: push
+
+jobs:
+  bats-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v2
+
+      - name: Setup Bats and bats libs
+        uses: brokenpip3/setup-bats-libs@1.0.0
+        with:
+          bats-install: true
+          bats-version: v1.10.0
+          support-path: ${{ github.workspace }}/test/test_helper/bats-support
+          assert-path: ${{ github.workspace }}/test/test_helper/bats-assert
+          detik-install: false
+          file-install: false
+
+      - name: Run tests
+        run: bats test
